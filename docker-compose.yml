@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  app:
+    container_name: einvoice-application
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "33000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    environment: 
+      - PORT=${PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASS=${MAIL_PASS}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_BRANCH_DATA=${MAIL_BRANCH_DATA}
+      - MAIL_CC=${MAIL_CC}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+    volumes: 
+      - ~/einvoice-applications:/app/applications
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
